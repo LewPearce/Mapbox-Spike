@@ -43,7 +43,7 @@
 
 
 #map { 
-  height: 1500px; 
-  width: 1500px;
+  height: 90vh; 
+  width: 95vw;
   position: relative;
 }

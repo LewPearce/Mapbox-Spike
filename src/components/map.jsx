@@ -13,7 +13,7 @@ const Map = () => {
       () => {},
       { enableHighAccuracy: true }
     );
-  });
+  }, []);
 
   return (
     <MapContainer

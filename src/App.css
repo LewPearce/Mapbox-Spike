@@ -1,5 +1,9 @@
 .App {
+  display: flex;
+  flex-direction: column;
   text-align: center;
+  align-content: center;
+  align-items: center;
 }
 
 .App-logo {
@@ -35,4 +39,11 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+
+#map { 
+  height: 1500px; 
+  width: 1500px;
+  position: relative;
 }

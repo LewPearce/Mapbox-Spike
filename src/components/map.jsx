@@ -1,42 +1,58 @@
-import { MapContainer, TileLayer, Circle, Popup } from "react-leaflet";
-import { useState, useEffect } from "react";
+import mapboxgl from "mapbox-gl";
+import React from "react";
+import { useEffect, useRef, useState } from "react";
+import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions";
+import { geodata } from "./exampleRoute";
+
+mapboxgl.accessToken =
+  "pk.eyJ1IjoibGV3cGVhcmNlIiwiYSI6ImNsZmw3Z3MzazAyZnQzeGthdHFpZWZtd2cifQ.tKYSfPl98gg0jYXpPvYPNg";
 
 //google https://www.google.cn/maps/vt?lyrs=m@189&gl=cn&x={x}&y={y}&z={z}
 //openStreetMap https://tile.openstreetmap.org/{z}/{x}/{y}.png
 
-const Map = () => {
-  const [startCoords, setStartCoords] = useState([51.5, -0, 55]);
-  const [isLoading, setIsLoading] = useState(true)
+class Map extends React.Component {
+  componentDidMount() {
+    const map = new mapboxgl.Map({
+      container: this.mapWrapper,
+      style: "mapbox://styles/mapbox/streets-v10",
+      center: [-73.985664, 40.748514],
+      zoom: 12,
+    });
+    const directions = new MapboxDirections({
+      accessToken: mapboxgl.accessToken,
+      unit: "metric",
+      profile: "mapbox/driving",
+    });
+    map.addControl(directions, "top-left");
 
-  useEffect(() => {
-    navigator.geolocation.watchPosition(
-      (data) => {
-        setIsLoading(false)
-        setStartCoords([data.coords.latitude, data.coords.longitude])},
-      () => {},
-      { enableHighAccuracy: true }
-    );
-  }, []);
+    map.on("load", () => {
+      map.addSource("route", {
+        type: "geojson",
+        data: {
+          type: "Feature",
+          properties: {},
+          geometry: geodata.routes[0].geometry,
+        },
+      });
+      map.addLayer({
+        id: "route",
+        type: "line",
+        source: "route",
+        layout: {
+          "line-join": "round",
+          "line-cap": "round",
+        },
+        paint: {
+          "line-color": "#888",
+          "line-width": 8,
+        },
+      });
+    });
+  }
 
-
-  return isLoading ? <h1>Loading</h1> : ( <MapContainer
-    center={startCoords}
-    zoom={16}
-    scrollWheelZoom={true}
-    id="map"
-  >
-    <TileLayer
-      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-    />
-    <Circle
-      center={startCoords}
-      pathOptions={{ color: "green", stroke: false }}
-      radius={50}
-    >
-      <Popup></Popup>
-    </Circle>
-  </MapContainer>)
-};
+  render() {
+    return <div ref={(el) => (this.mapWrapper = el)} className="mapWrapper" />;
+  }
+}
 
 export default Map;

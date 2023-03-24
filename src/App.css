@@ -47,3 +47,11 @@
   width: 95vw;
   position: relative;
 }
+.map-container {
+  height: 400px;
+}
+
+.mapWrapper {
+  height: 90vh;
+  width: 95vw;
+}

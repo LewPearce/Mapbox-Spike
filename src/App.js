@@ -1,17 +1,15 @@
 import "./App.css";
-import Map from "./components/map";
-
-
-
+import Maphook from "./components/Maphook";
+import { Bikes } from "./components/Bikes";
+import { useState } from "react";
 
 function App() {
-
-
-
+  const [bike, setBike] = useState([53.47310644940652, -2.2483562103991255]);
   return (
     <div className="App">
       <h1>Leaflet testing</h1>
-        <Map/>
+      <Bikes bike={bike} setBike={setBike} />
+      <Maphook bike={bike} />
     </div>
   );
 }

@@ -3,12 +3,14 @@ import React from "react";
 import { useEffect, useRef, useState } from "react";
 import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions";
 import { geodata } from "./exampleRoute";
+import axios from "axios";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoibGV3cGVhcmNlIiwiYSI6ImNsZmw3Z3MzazAyZnQzeGthdHFpZWZtd2cifQ.tKYSfPl98gg0jYXpPvYPNg";
 
 //google https://www.google.cn/maps/vt?lyrs=m@189&gl=cn&x={x}&y={y}&z={z}
 //openStreetMap https://tile.openstreetmap.org/{z}/{x}/{y}.png
+
 
 class Map extends React.Component {
   componentDidMount() {

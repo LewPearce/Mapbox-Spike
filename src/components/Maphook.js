@@ -1,4 +1,5 @@
 import mapboxgl from "mapbox-gl";
+import geojsonLength from "geojson-length";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
@@ -13,11 +14,10 @@ const Maphook = ({ bike }) => {
   const [currentLocation, setCurrentLocation] = useState([]);
   const [gotLocation, setGotLocation] = useState(false);
   const [destination, setDestination] = useState([]);
-  const [bearing, setBearing] = useState(0);
+  // const [bearing, setBearing] = useState(0);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(function (position) {
-      setBearing(position.coords.heading);
       setCurrentLocation([position.coords.longitude, position.coords.latitude]);
     });
 
@@ -28,6 +28,29 @@ const Maphook = ({ bike }) => {
     setDestination(bike);
   }, [bike]);
 
+  // function toRadians(degrees) {
+  //   return (degrees * Math.PI) / 180;
+  // }
+
+  // function toDegrees(radians) {
+  //   return (radians * 180) / Math.PI;
+  // }
+
+  // function getBearing(startLat, startLng, destLat, destLng) {
+  //   startLat = toRadians(startLat);
+  //   startLng = toRadians(startLng);
+  //   destLat = toRadians(destLat);
+  //   destLng = toRadians(destLng);
+
+  //   let y = Math.sin(destLng - startLng) * Math.cos(destLat);
+  //   let x =
+  //     Math.cos(startLat) * Math.sin(destLat) -
+  //     Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
+  //   let brng = Math.atan2(y, x);
+  //   brng = toDegrees(brng);
+  //   return (brng + 360) % 360;
+  // }
+
   useEffect(() => {
     if (gotLocation) {
       axios
@@ -35,12 +58,13 @@ const Maphook = ({ bike }) => {
           `https://api.geoapify.com/v1/routing?waypoints=${currentLocation[1]},${currentLocation[0]}|${destination[0]},${destination[1]}&mode=bicycle&apiKey=${apiKey}`
         )
         .then((route) => {
+    
           if (!map) {
             const newMap = new mapboxgl.Map({
               container: mapContainerRef.current,
               style: "mapbox://styles/mapbox/streets-v10",
               center: currentLocation,
-              zoom: 12,
+              zoom: 15,
             });
 
             newMap.on("load", () => {
@@ -70,11 +94,19 @@ const Maphook = ({ bike }) => {
             });
           } else {
             map.getSource("route").setData(route.data);
-            map.setBearing(bearing);
+            // the snippet below can change the map orientation to have the destination at the top, but on;y works on first route selected
+            // map.setBearing(
+            //   getBearing(
+            //     currentLocation[0],
+            //     currentLocation[1],
+            //     destination[0],
+            //     destination[1]
+            //   ) + 270
+            // );
           }
         });
     }
-  }, [destination, currentLocation, map, gotLocation, bearing]);
+  }, [destination, currentLocation, map, gotLocation]);
 
   return <div ref={mapContainerRef} className="mapWrapper" />;
 };
